@@ -3,7 +3,7 @@ import time
 import random
 from datetime import datetime
 
-API_URL = "http://127.0.0.1:8000/api/events"
+API_URL = "https://syntrue-absher.onrender.com/api/events"
 
 # تعريف "الجندي" والمنطقة وحساب أبشر
 OFFICER_ID = "officer_riyadh_1"      # اسم جهاز العسكري
