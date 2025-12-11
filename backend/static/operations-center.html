@@ -449,15 +449,15 @@
           <span>متصل بالشبكة</span>
         </div>
         
-        <!-- زر إدارة الفعاليات -->
-        <button onclick="window.open('events-dashboard.html', '_blank')" 
-                style="width: 100%; margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; 
-                       font-size: 13px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);"
-                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
-          🗓️ إدارة الفعاليات والأحداث الموسمية
-        </button>
+         <!-- زر إدارة الفعاليات (يفتح نفس التبويب) -->
+         <button onclick="window.location.href='/static/events-dashboard.html'"
+            style="width: 100%; margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
+              font-size: 13px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
+           🗓️ الانتقال إلى إدارة الفعاليات
+         </button>
       </div>
 
       <div class="stats-grid">
