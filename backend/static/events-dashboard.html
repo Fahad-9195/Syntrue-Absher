@@ -31,6 +31,7 @@
             border-radius: 10px;
             margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
         
         .header h1 {
@@ -311,6 +312,9 @@
         <div class="header">
             <h1><i class="fas fa-shield-alt"></i> لوحة إدارة الفعاليات والأحداث الموسمية</h1>
             <p>نظام متكامل لإدارة الفعاليات الدينية الكبرى (الحج، العمرة، إلخ) مع تقنيات IoT والبيومتريا</p>
+            <button onclick="logout()" style="position: absolute; top: 20px; left: 20px; padding: 10px 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
         </div>
         
         <div class="tabs">
@@ -886,6 +890,14 @@
             alert.textContent = message;
             document.querySelector('.container').insertBefore(alert, document.querySelector('.tabs'));
             setTimeout(() => alert.remove(), 3000);
+        }
+        
+        /*************** Logout Function ***************/
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.removeItem('opsAuth');
+                window.location.href = '/static/welcome.html';
+            }
         }
         
         // تحميل البيانات عند فتح الصفحة

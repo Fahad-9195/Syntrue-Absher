@@ -458,6 +458,16 @@
             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
            🗓️ الانتقال إلى إدارة الفعاليات
          </button>
+
+         <!-- زر تسجيل الخروج -->
+         <button onclick="logout()"
+            style="width: 100%; margin-top: 10px; padding: 12px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+              border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
+              font-size: 13px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(239, 68, 68, 0.4)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(239, 68, 68, 0.3)'">
+           🚪 تسجيل الخروج
+         </button>
       </div>
 
       <div class="stats-grid">
@@ -1131,6 +1141,14 @@ ${events.slice().reverse().map(e => `
           console.error(err);
           alert('فشل فتح التقارير');
         });
+    }
+
+    /*************** Logout Function ***************/
+    function logout() {
+      if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        localStorage.removeItem('opsAuth');
+        window.location.href = '/static/welcome.html';
+      }
     }
 
     // Initialize
