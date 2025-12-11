@@ -503,6 +503,10 @@
           <button class="btn" onclick="refreshData()">🔄 تحديث</button>
           <button class="btn" onclick="toggleHeatmap()">🔥 Heatmap</button>
           <button class="btn primary" onclick="centerMap()">📍 إعادة التوسيط</button>
+          <button class="btn" onclick="exportData()"><i class="fas fa-download"></i> تصدير</button>
+          <button class="btn" onclick="importData()"><i class="fas fa-upload"></i> استيراد</button>
+          <button class="btn" onclick="openReports()"><i class="fas fa-chart-bar"></i> التقارير</button>
+          <button class="btn" onclick="window.location.href='/static/events-dashboard.html'">🗓️ إدارة الفعاليات</button>
           <button class="btn" onclick="window.location.href='/static/operations-dashboard.html'">🏠 العودة</button>
         </div>
       </div>
@@ -996,6 +1000,137 @@
     // Refresh data
     function refreshData() {
       fetchOfficersData();
+    }
+
+    // Export data to CSV
+    function exportData() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(events => {
+          const header = ['timestamp', 'device_id', 'type', 'level', 'status'];
+          const rows = events.map(e => [
+            e.timestamp, e.device_id, e.type, e.level, e.status || 'open'
+          ]);
+          const escape = (v) => `"${String(v).replace(/"/g, '""')}"`;
+          const csv = header.join(';') + '\r\n' + rows.map(r => r.map(escape).join(';')).join('\r\n');
+          const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `operations_${new Date().toISOString().slice(0,10)}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showNotification('تم تصدير البيانات ✅');
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification('فشل التصدير ❌');
+        });
+    }
+
+    // Import data from CSV
+    function importData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.csv,text/csv';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+          const text = ev.target.result;
+          const lines = text.split(/\r?\n/).filter(l => l.trim());
+          if (lines.length <= 1) {
+            alert('الملف فارغ');
+            return;
+          }
+          let imported = 0;
+          for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(/[;,]/).map(p => p.trim().replace(/^"|"$/g, ''));
+            if (parts.length < 4) continue;
+            const payload = {
+              timestamp: parts[0],
+              device_id: parts[1],
+              type: parts[2],
+              level: parts[3],
+              status: parts[4] || 'open'
+            };
+            try {
+              await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              imported++;
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          showNotification(`تم استيراد ${imported} حدث ✅`);
+          refreshData();
+        };
+        reader.readAsText(file, 'utf-8');
+      };
+      input.click();
+    }
+
+    // Open reports page
+    function openReports() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(events => {
+          const win = window.open('', '_blank');
+          const html = `
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8" />
+<title>تقرير العمليات الأمنية</title>
+<style>
+body { font-family: system-ui, sans-serif; padding: 20px; }
+h1 { margin-top: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: right; }
+th { background: #f3f4f6; }
+.meta { margin-bottom: 10px; color: #555; }
+.btn-print { margin-bottom: 15px; padding: 8px 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>تقرير العمليات الأمنية</h1>
+<p class="meta">إجمالي الأحداث: ${events.length}</p>
+<button class="btn-print" onclick="window.print()">🖨 طباعة / حفظ PDF</button>
+<table>
+<thead>
+<tr>
+<th>الوقت</th>
+<th>الجهاز</th>
+<th>النوع</th>
+<th>الخطورة</th>
+<th>الحالة</th>
+</tr>
+</thead>
+<tbody>
+${events.slice().reverse().map(e => `
+<tr>
+<td>${e.timestamp}</td>
+<td>${e.device_id}</td>
+<td>${e.type}</td>
+<td>${e.level}</td>
+<td>${e.status || 'open'}</td>
+</tr>`).join('')}
+</tbody>
+</table>
+</body>
+</html>`;
+          win.document.write(html);
+          win.document.close();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('فشل فتح التقارير');
+        });
     }
 
     // Initialize

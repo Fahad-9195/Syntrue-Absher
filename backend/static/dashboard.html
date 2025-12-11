@@ -699,13 +699,10 @@
     </header>
 
     <div class="controls-row">
-      <button id="toggle-fetch-btn" class="btn primary"><i class="fas fa-pause"></i> إيقاف التحديث</button>
       <button id="simulation-toggle-btn" class="btn"><i class="fas fa-play"></i> تشغيل المحاكاة</button>
       <button id="manual-burglary-btn" class="btn danger"><i class="fas fa-bell"></i> بلاغ سرقة (خارج المنزل)</button>
-      <button id="export-excel-btn" class="btn"><i class="fas fa-download"></i> تصدير CSV</button>
-      <button id="import-excel-btn" class="btn"><i class="fas fa-upload"></i> استيراد CSV</button>
+      <button id="police-report-btn" class="btn danger"><i class="fas fa-exclamation-triangle"></i> إرسال بلاغ للشرطة</button>
       <button id="resolve-all-btn" class="btn danger"><i class="fas fa-check-double"></i> حل جميع البلاغات</button>
-      <button id="go-reports-btn" class="btn"><i class="fas fa-chart-bar"></i> التقارير</button>
       <button id="theme-toggle-btn" class="btn"><i class="fas fa-sun"></i> الوضع الفاتح</button>
     </div>
 
@@ -921,14 +918,10 @@
 
     const connectionStatus = document.getElementById("connection-status");
     const offlineBanner = document.getElementById("offline-banner");
-    const toggleBtn = document.getElementById("toggle-fetch-btn");
     const simulationToggleBtn = document.getElementById("simulation-toggle-btn");
     const manualBurglaryBtn = document.getElementById("manual-burglary-btn");
-    const exportExcelBtn = document.getElementById("export-excel-btn");
-    const importExcelBtn = document.getElementById("import-excel-btn");
-    const fileInput = document.getElementById("file-input");
+    const policeReportBtn = document.getElementById("police-report-btn");
     const resolveAllBtn = document.getElementById("resolve-all-btn");
-    const goReportsBtn = document.getElementById("go-reports-btn");
     const themeToggleBtn = document.getElementById("theme-toggle-btn");
 
     const devicesSummaryEl = document.getElementById("devices-summary");
@@ -1730,6 +1723,40 @@
       }
     }
 
+    /*************** بلاغ عام للشرطة ***************/
+    async function sendPoliceReport() {
+      const reportText = prompt("اكتب تفاصيل البلاغ:");
+      if (!reportText || reportText.trim() === "") return;
+      policeReportBtn.disabled = true;
+      policeReportBtn.textContent = "... جاري الإرسال";
+      try {
+        const payload = {
+          device_id: "manual_police_report",
+          type: "police_report",
+          level: "danger",
+          status: "open",
+          home_id: DEFAULT_HOME_ID,
+          absher_id: DEFAULT_ABSHER_ID,
+          timestamp: new Date().toISOString(),
+          reporter: currentUser,
+          message: reportText.trim(),
+        };
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        showToast("تم إرسال البلاغ للشرطة ✅", "info");
+        fetchEvents();
+      } catch (err) {
+        console.error("Police report error:", err);
+        showToast("تعذر إرسال البلاغ، تحقق من الاتصال", "warning");
+      } finally {
+        policeReportBtn.disabled = false;
+        policeReportBtn.textContent = "إرسال بلاغ للشرطة";
+      }
+    }
+
     function startSimulation() {
       if (simulationEnabled) return;
       simulationEnabled = true;
@@ -1890,18 +1917,6 @@ ${events
         fetchEvents();
       });
 
-      toggleBtn.addEventListener("click", () => {
-        fetchingEnabled = !fetchingEnabled;
-        if (fetchingEnabled) {
-          toggleBtn.textContent = "⏸ إيقاف التحديث";
-          toggleBtn.classList.remove("paused");
-          fetchEvents();
-        } else {
-          toggleBtn.textContent = "▶ تشغيل التحديث";
-          toggleBtn.classList.add("paused");
-        }
-      });
-
       simulationToggleBtn.addEventListener("click", () => {
         if (simulationEnabled) stopSimulation();
         else startSimulation();
@@ -1909,17 +1924,7 @@ ${events
 
       manualBurglaryBtn.addEventListener("click", sendManualBurglaryReport);
 
-      exportExcelBtn.addEventListener("click", exportVisibleEventsToExcel);
-
-      importExcelBtn.addEventListener("click", () => {
-        fileInput.click();
-      });
-
-      fileInput.addEventListener("change", () => {
-        const file = fileInput.files[0];
-        handleFileImport(file);
-        fileInput.value = "";
-      });
+      policeReportBtn.addEventListener("click", sendPoliceReport);
 
       resolveAllBtn.addEventListener("click", async () => {
         const ok = confirm("هل أنت متأكد من تعليم كل البلاغات المفتوحة كـ تم الحل؟");
@@ -1934,8 +1939,6 @@ ${events
           showToast("حدث خطأ أثناء حل البلاغات", "warning");
         }
       });
-
-      goReportsBtn.addEventListener("click", openReportsPage);
 
       themeToggleBtn.addEventListener("click", () => {
         const isLight = document.body.classList.contains("light-theme");

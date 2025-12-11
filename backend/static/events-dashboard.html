@@ -617,6 +617,13 @@
     </div>
     
     <script>
+        /*************** Authentication Check ***************/
+        // Check if military personnel is logged in
+        const opsAuth = localStorage.getItem('opsAuth');
+        if (opsAuth !== 'true') {
+            window.location.href = '/static/operations-login.html';
+        }
+        
         const API_URL = "https://syntrue-absher.onrender.com/api/events/seasonal";
         
         function switchTab(tabName) {
