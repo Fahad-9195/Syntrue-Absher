@@ -1149,7 +1149,8 @@ ${events.slice().reverse().map(e => `
     function logout() {
       if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
         localStorage.removeItem('opsAuth');
-        window.location.href = '/static/welcome.html';
+        localStorage.removeItem('opsUsername');
+        window.location.href = '/static/operations-login.html';
       }
     }
 
