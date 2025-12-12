@@ -1,26 +1,49 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
+*.pyo
+*.pyd
 env/
+.venv/
 venv/
 ENV/
+env.bak/
+venv.bak/
 
-# Face images (security - don't upload authorized faces)
-face.png
-authorized/
-
-# IDE
+# Editor / OS
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 Thumbs.db
+desktop.ini
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mac
+.DS_Store
 
 # Logs
 *.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Python coverage
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
