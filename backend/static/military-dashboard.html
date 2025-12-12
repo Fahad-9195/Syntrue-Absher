@@ -342,6 +342,21 @@
       <button class="action-btn btn-primary" onclick="window.location.href='/static/operations-center.html'">
         <i class="fas fa-map-marked-alt"></i> مركز العمليات
       </button>
+      <button class="action-btn btn-success" onclick="window.location.href='/static/events-dashboard.html'">
+        <i class="fas fa-calendar-alt"></i> إدارة الفعاليات
+      </button>
+      <button class="action-btn btn-warning" onclick="exportData()">
+        <i class="fas fa-download"></i> تصدير البيانات
+      </button>
+      <button class="action-btn btn-warning" onclick="importData()">
+        <i class="fas fa-upload"></i> استيراد البيانات
+      </button>
+      <button class="action-btn btn-warning" onclick="generateReport()">
+        <i class="fas fa-file-alt"></i> التقارير
+      </button>
+      <button class="action-btn btn-danger" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+      </button>
     </div>
   </div>
 
@@ -561,6 +576,28 @@
     // Export Data Function
     function exportData() {
       alert('جاري تصدير البيانات...');
+      // Add export logic here
+    }
+
+    // Import Data Function
+    function importData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,.csv';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          alert('جاري استيراد البيانات من: ' + file.name);
+          // Add import logic here
+        }
+      };
+      input.click();
+    }
+
+    // Generate Report Function
+    function generateReport() {
+      alert('جاري إنشاء التقرير...');
+      // Add report generation logic here
     }
 
     // Logout Function
